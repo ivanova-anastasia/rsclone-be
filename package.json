@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "start": "node dist/bin/www",
-    "prestart": "npm run build",
     "dev": "nodemon ./bin/www.ts",
     "build": "tsc -p ."
   },
