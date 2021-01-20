@@ -1,29 +1,36 @@
-import { v4 as uuid } from 'uuid';
-import { Router } from 'express';
-import * as storage from '../storage/mongo';
-const router = Router();
+import express from 'express';
+const router = express.Router();
+import { GameModel } from '../types/game';
 
-router.get('/', async (req, res, next) => {
-  const list = await storage.listAll();
-  res.json(list);
+router.route('/').get((req, res) => {
+  GameModel.find({})
+    .then((items: any) => res.json(items))
+    .catch((err: any) => res.status(400).json('Error: ' + err));
 });
 
-router.get('/:id', async (req, res, next) => {
-  const item = await storage.getById(req.params['id']);
-
-  res.status(item ? 200 : 400).json(item);
+router.route('/:id').get((req, res) => {
+  GameModel.findById(req.params.id)
+    .then((game) => res.json(game))
+    .catch((err) => res.status(400).json('Error: ' + err));
 });
 
-router.post('/', async (req, res, next) => {
-  const { body } = req;
-  const newBody = await storage.create(body);
-  res.json(newBody);
+router.route('/').post((req, res) => {
+  const newGame = new GameModel({
+    userId: req.body.userId,
+    score: req.body.score,
+    totalTime: req.body.totalTime,
+  });
+
+  newGame
+    .save()
+    .then((item) => res.json(item))
+    .catch((err) => res.status(400).json('Error: ' + err));
 });
 
-router.delete('/:id', async (req, res, next) => {
-  const deletedValue = await storage.remove(req.params['id']);
-  console.log('Del value: ' + deletedValue);
-
-  res.status(204).json(null);
+router.route('/:userId').delete((req, res) => {
+  GameModel.deleteMany({ userId: req.params.userId })
+    .then(() => res.json('Game deleted.'))
+    .catch((err) => res.status(400).json('Error: ' + err));
 });
+
 export default router;

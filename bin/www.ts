@@ -7,6 +7,7 @@
 import app from '../app';
 import debug from 'debug';
 import * as http from 'http';
+import mongoose from 'mongoose';
 
 /**
  * Get port from environment and store in Express.
@@ -24,10 +25,28 @@ const server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
+const MONGO_URI =
+  'mongodb+srv://flappy-bird:0XefcRAh1O8ZWJYU@cluster0.jby6t.mongodb.net/bird?retryWrites=true&w=majority';
 
 server.listen(port);
 server.on('error', onError);
-server.on('listening', onListening);
+server.on('listening', async () => {
+  const addr = server.address();
+  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
+  debug('Listening on ' + bind);
+
+  mongoose.connect(MONGO_URI, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+  });
+  mongoose.connection.on('open', () => {
+    console.log('Connected to Mongo!');
+  });
+  mongoose.connection.on('error', (err: any) => {
+    console.error(`Unable to connect to Mongo!`, err);
+  });
+});
 
 /**
  * Normalize a port into a number, string, or false.
@@ -73,14 +92,4 @@ function onError(error) {
     default:
       throw error;
   }
-}
-
-/**
- * Event listener for HTTP server "listening" event.
- */
-
-function onListening() {
-  const addr = server.address();
-  const bind = typeof addr === 'string' ? 'pipe ' + addr : 'port ' + addr.port;
-  debug('Listening on ' + bind);
 }
