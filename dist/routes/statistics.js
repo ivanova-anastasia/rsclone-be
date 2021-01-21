@@ -1,22 +1,25 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
 };
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -55,59 +58,86 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = require("express");
-var storage = __importStar(require("../storage/mongo"));
-var router = express_1.Router();
-router.get('/', function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var list;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, storage.listAll()];
-            case 1:
-                list = _a.sent();
-                res.json(list);
+exports.StatisticsController = void 0;
+var game_1 = require("../types/game");
+var tsoa_1 = require("tsoa");
+var StatisticsController = /** @class */ (function (_super) {
+    __extends(StatisticsController, _super);
+    function StatisticsController() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    StatisticsController.prototype.getAll = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, game_1.GameModel.find({})
+                        .then(function (items) { return items; })
+                        .catch(function (err) { return _this.setStatus(500); })];
+            });
+        });
+    };
+    StatisticsController.prototype.create = function (userId, score, totalTime) {
+        return __awaiter(this, void 0, void 0, function () {
+            var newGame;
+            var _this = this;
+            return __generator(this, function (_a) {
+                newGame = new game_1.GameModel({
+                    userId: userId,
+                    score: score,
+                    totalTime: totalTime,
+                });
+                this.setStatus(201);
+                return [2 /*return*/, newGame
+                        .save()
+                        .then(function (item) {
+                        _this.setStatus(201);
+                        return item;
+                    })
+                        .catch(function (err) { return _this.setStatus(500); })];
+            });
+        });
+    };
+    StatisticsController.prototype.getByUserId = function (userId) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                return [2 /*return*/, game_1.GameModel.find({ userId: userId })
+                        .then(function (items) { return items; })
+                        .catch(function (err) { return _this.setStatus(500); })];
+            });
+        });
+    };
+    StatisticsController.prototype.deleteByUserId = function (userId) {
+        return __awaiter(this, void 0, void 0, function () {
+            var _this = this;
+            return __generator(this, function (_a) {
+                game_1.GameModel.deleteMany({ userId: userId })
+                    .then(function () { return _this.setStatus(204); })
+                    .catch(function (err) { return _this.setStatus(500); });
                 return [2 /*return*/];
-        }
-    });
-}); });
-router.get('/:id', function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var item;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, storage.getById(req.params['id'])];
-            case 1:
-                item = _a.sent();
-                res.status(item ? 200 : 400).json(item);
-                return [2 /*return*/];
-        }
-    });
-}); });
-router.post('/', function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var body, newBody;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                body = req.body;
-                return [4 /*yield*/, storage.create(body)];
-            case 1:
-                newBody = _a.sent();
-                res.json(newBody);
-                return [2 /*return*/];
-        }
-    });
-}); });
-router.delete('/:id', function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var deletedValue;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, storage.remove(req.params['id'])];
-            case 1:
-                deletedValue = _a.sent();
-                console.log('Del value: ' + deletedValue);
-                res.status(204).json(null);
-                return [2 /*return*/];
-        }
-    });
-}); });
-exports.default = router;
+            });
+        });
+    };
+    __decorate([
+        tsoa_1.Get()
+    ], StatisticsController.prototype, "getAll", null);
+    __decorate([
+        tsoa_1.Post(),
+        __param(0, tsoa_1.BodyProp()),
+        __param(1, tsoa_1.BodyProp()),
+        __param(2, tsoa_1.BodyProp())
+    ], StatisticsController.prototype, "create", null);
+    __decorate([
+        tsoa_1.Get('/{userId}')
+    ], StatisticsController.prototype, "getByUserId", null);
+    __decorate([
+        tsoa_1.Delete('/{userId}')
+    ], StatisticsController.prototype, "deleteByUserId", null);
+    StatisticsController = __decorate([
+        tsoa_1.Route('/statistics'),
+        tsoa_1.Tags('StatisticsController')
+    ], StatisticsController);
+    return StatisticsController;
+}(tsoa_1.Controller));
+exports.StatisticsController = StatisticsController;
 //# sourceMappingURL=statistics.js.map

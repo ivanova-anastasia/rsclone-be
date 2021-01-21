@@ -1,7 +1,7 @@
 {
   "entryFile": "./app.ts",
   "spec": {
-    "outputDirectory": "."
+    "outputDirectory": "./"
   },
   "routes": {
     "basePath": "/",
