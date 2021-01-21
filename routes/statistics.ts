@@ -1,29 +1,49 @@
-import { v4 as uuid } from 'uuid';
-import { Router } from 'express';
-import * as storage from '../storage/mongo';
-const router = Router();
+import { GameModel } from '../types/game';
+import { BodyProp, Controller, Delete, Get, Post, Route, Tags } from 'tsoa';
 
-router.get('/', async (req, res, next) => {
-  const list = await storage.listAll();
-  res.json(list);
-});
+@Route('/statistics')
+@Tags('StatisticsController')
+export class StatisticsController extends Controller {
+  @Get()
+  public async getAll(): Promise<any[]> {
+    return GameModel.find({})
+      .then((items: any) => items)
+      .catch((err: any) => this.setStatus(500));
+  }
 
-router.get('/:id', async (req, res, next) => {
-  const item = await storage.getById(req.params['id']);
+  @Post()
+  public async create(
+    @BodyProp() userId: string,
+    @BodyProp() score: string,
+    @BodyProp() totalTime: string
+  ): Promise<any> {
+    const newGame = new GameModel({
+      userId: userId,
+      score: score,
+      totalTime: totalTime,
+    });
+    this.setStatus(201);
 
-  res.status(item ? 200 : 400).json(item);
-});
+    return newGame
+      .save()
+      .then((item) => {
+        this.setStatus(201);
+        return item;
+      })
+      .catch((err) => this.setStatus(500));
+  }
 
-router.post('/', async (req, res, next) => {
-  const { body } = req;
-  const newBody = await storage.create(body);
-  res.json(newBody);
-});
+  @Get('/{userId}')
+  public async getByUserId(userId: string): Promise<any[]> {
+    return GameModel.find({ userId: userId })
+      .then((items: any) => items)
+      .catch((err: any) => this.setStatus(500));
+  }
 
-router.delete('/:id', async (req, res, next) => {
-  const deletedValue = await storage.remove(req.params['id']);
-  console.log('Del value: ' + deletedValue);
-
-  res.status(204).json(null);
-});
-export default router;
+  @Delete('/{userId}')
+  public async deleteByUserId(userId: string): Promise<void> {
+    GameModel.deleteMany({ userId: userId })
+      .then(() => this.setStatus(204))
+      .catch((err) => this.setStatus(500));
+  }
+}
