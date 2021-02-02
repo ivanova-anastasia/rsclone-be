@@ -36,7 +36,9 @@ export class StatisticsController extends Controller {
   @Get('/{userId}')
   public async getByUserId(userId: string): Promise<any[]> {
     return GameModel.find({ userId: userId })
-      .then((items: any) => items)
+      .then((items: any) => {
+        console.log(items)
+        return items})
       .catch((err: any) => this.setStatus(500));
   }
 

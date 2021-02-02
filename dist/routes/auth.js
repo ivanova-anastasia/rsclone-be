@@ -57,90 +57,142 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StatisticsController = void 0;
-var game_1 = require("../types/game");
+exports.AuthController = void 0;
 var tsoa_1 = require("tsoa");
-var StatisticsController = /** @class */ (function (_super) {
-    __extends(StatisticsController, _super);
-    function StatisticsController() {
+var md5_1 = __importDefault(require("md5"));
+var uuid_1 = require("uuid");
+var user_1 = require("../types/user");
+var sessions_1 = require("../types/sessions");
+var PG_SALT = process.env.PG_SALT;
+var getPasswordHash = function (password) {
+    console.log("PG_SALT: " + PG_SALT);
+    var pgSalt = "";
+    return md5_1.default(password + PG_SALT);
+};
+var generateToken = function (userId) {
+    var token = uuid_1.v4();
+    var newSession = new sessions_1.SessionsModel({
+        token: token,
+        userId: userId,
+        expiresAt: new Date(Date.now() + 3600 * 1000).toISOString(),
+    });
+    newSession
+        .save()
+        .then(function (item) {
+        console.log('Session is saved ' + item);
+    })
+        .catch(function (err) { return console.log('Session isnt saved ' + err); });
+    return token;
+};
+var AuthController = /** @class */ (function (_super) {
+    __extends(AuthController, _super);
+    function AuthController() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    StatisticsController.prototype.getAll = function () {
+    AuthController.prototype.create = function (userName, password) {
         return __awaiter(this, void 0, void 0, function () {
+            var passwordHash, newUser;
             var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, game_1.GameModel.find({})
-                        .then(function (items) { return items; })
-                        .catch(function (err) { return _this.setStatus(500); })];
+                console.log("login request: username - " + userName + " password - " + password);
+                passwordHash = getPasswordHash(password);
+                newUser = new user_1.UsersModel({
+                    userName: userName,
+                    passwordHash: passwordHash,
+                });
+                console.log("log: ");
+                return [2 /*return*/, user_1.UsersModel.findOne({ userName: userName, passwordHash: passwordHash })
+                        .then(function (user) {
+                        console.log("log: " + user);
+                        _this.setStatus(200);
+                        var token = generateToken(user._id);
+                        return { token: token };
+                    })
+                        .catch(function (err) {
+                        _this.setStatus(403);
+                        return { reason: 'Invalid username or password' };
+                    })];
             });
         });
     };
-    StatisticsController.prototype.create = function (userId, score, totalTime) {
+    AuthController.prototype.test = function (userName, password, authorization) {
         return __awaiter(this, void 0, void 0, function () {
-            var newGame;
             var _this = this;
             return __generator(this, function (_a) {
-                newGame = new game_1.GameModel({
-                    userId: userId,
-                    score: score,
-                    totalTime: totalTime,
-                });
-                this.setStatus(201);
-                return [2 /*return*/, newGame
-                        .save()
+                console.log("authorization: " + authorization);
+                return [2 /*return*/, sessions_1.SessionsModel.find({ token: authorization })
                         .then(function (item) {
-                        _this.setStatus(201);
+                        console.log("session: " + item);
                         return item;
                     })
-                        .catch(function (err) { return _this.setStatus(500); })];
+                        .catch(function (err) { return _this.setStatus(403); })];
             });
         });
     };
-    StatisticsController.prototype.getByUserId = function (userId) {
+    AuthController.prototype.register = function (userName, password) {
         return __awaiter(this, void 0, void 0, function () {
+            var passwordHash, newUser, existingUserCheck;
             var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, game_1.GameModel.find({ userId: userId })
-                        .then(function (items) {
-                        console.log(items);
-                        return items;
+                passwordHash = getPasswordHash(password);
+                newUser = new user_1.UsersModel({
+                    userName: userName,
+                    passwordHash: passwordHash,
+                });
+                existingUserCheck = user_1.UsersModel.findOne({ userName: userName })
+                    .then(function (user) {
+                    if (user) {
+                        _this.setStatus(409);
+                        console.log("user exist: " + user);
+                    }
+                    else {
+                        //return { reason: 'This username already exists'}
+                        return user;
+                    }
+                })
+                    .catch(function (err) {
+                    console.log("err: " + err);
+                });
+                console.log("existingUserCheck: " + existingUserCheck.userName);
+                if (existingUserCheck)
+                    return [2 /*return*/, { reason: 'This username already exists' }];
+                return [2 /*return*/, newUser
+                        .save()
+                        .then(function (user) {
+                        var token = generateToken(user._id);
+                        console.log("token: " + token);
+                        _this.setStatus(201);
+                        return { token: token };
                     })
                         .catch(function (err) { return _this.setStatus(500); })];
             });
         });
     };
-    StatisticsController.prototype.deleteByUserId = function (userId) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_a) {
-                game_1.GameModel.deleteMany({ userId: userId })
-                    .then(function () { return _this.setStatus(204); })
-                    .catch(function (err) { return _this.setStatus(500); });
-                return [2 /*return*/];
-            });
-        });
-    };
     __decorate([
-        tsoa_1.Get()
-    ], StatisticsController.prototype, "getAll", null);
+        tsoa_1.Post('/login'),
+        __param(0, tsoa_1.BodyProp()),
+        __param(1, tsoa_1.BodyProp())
+    ], AuthController.prototype, "create", null);
     __decorate([
-        tsoa_1.Post(),
+        tsoa_1.Post('/test'),
         __param(0, tsoa_1.BodyProp()),
         __param(1, tsoa_1.BodyProp()),
-        __param(2, tsoa_1.BodyProp())
-    ], StatisticsController.prototype, "create", null);
+        __param(2, tsoa_1.Header('Authorization'))
+    ], AuthController.prototype, "test", null);
     __decorate([
-        tsoa_1.Get('/{userId}')
-    ], StatisticsController.prototype, "getByUserId", null);
-    __decorate([
-        tsoa_1.Delete('/{userId}')
-    ], StatisticsController.prototype, "deleteByUserId", null);
-    StatisticsController = __decorate([
-        tsoa_1.Route('/statistics'),
-        tsoa_1.Tags('StatisticsController')
-    ], StatisticsController);
-    return StatisticsController;
+        tsoa_1.Post('/register'),
+        __param(0, tsoa_1.BodyProp()),
+        __param(1, tsoa_1.BodyProp())
+    ], AuthController.prototype, "register", null);
+    AuthController = __decorate([
+        tsoa_1.Route('/auth'),
+        tsoa_1.Tags('AuthController')
+    ], AuthController);
+    return AuthController;
 }(tsoa_1.Controller));
-exports.StatisticsController = StatisticsController;
-//# sourceMappingURL=statistics.js.map
+exports.AuthController = AuthController;
+//# sourceMappingURL=auth.js.map

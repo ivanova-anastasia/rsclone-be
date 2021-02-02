@@ -8,6 +8,8 @@ var runtime_1 = require("@tsoa/runtime");
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 var statistics_1 = require("./statistics");
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+var auth_1 = require("./auth");
+// WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
 var models = {};
 var validationService = new runtime_1.ValidationService(models);
 // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
@@ -81,6 +83,61 @@ function RegisterRoutes(app) {
         }
         var controller = new statistics_1.StatisticsController();
         var promise = controller.deleteByUserId.apply(controller, validatedArgs);
+        promiseHandler(controller, promise, response, undefined, next);
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.post('/auth/login', function (request, response, next) {
+        var args = {
+            userName: { "in": "body-prop", "name": "userName", "required": true, "dataType": "string" },
+            password: { "in": "body-prop", "name": "password", "required": true, "dataType": "string" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        var validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+        }
+        catch (err) {
+            return next(err);
+        }
+        var controller = new auth_1.AuthController();
+        var promise = controller.create.apply(controller, validatedArgs);
+        promiseHandler(controller, promise, response, undefined, next);
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.post('/auth/test', function (request, response, next) {
+        var args = {
+            userName: { "in": "body-prop", "name": "userName", "required": true, "dataType": "string" },
+            password: { "in": "body-prop", "name": "password", "required": true, "dataType": "string" },
+            authorization: { "in": "header", "name": "Authorization", "required": true, "dataType": "string" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        var validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+        }
+        catch (err) {
+            return next(err);
+        }
+        var controller = new auth_1.AuthController();
+        var promise = controller.test.apply(controller, validatedArgs);
+        promiseHandler(controller, promise, response, undefined, next);
+    });
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    app.post('/auth/register', function (request, response, next) {
+        var args = {
+            userName: { "in": "body-prop", "name": "userName", "required": true, "dataType": "string" },
+            password: { "in": "body-prop", "name": "password", "required": true, "dataType": "string" },
+        };
+        // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+        var validatedArgs = [];
+        try {
+            validatedArgs = getValidatedArgs(args, request, response);
+        }
+        catch (err) {
+            return next(err);
+        }
+        var controller = new auth_1.AuthController();
+        var promise = controller.register.apply(controller, validatedArgs);
         promiseHandler(controller, promise, response, undefined, next);
     });
     // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa

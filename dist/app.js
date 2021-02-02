@@ -25,6 +25,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var express_1 = __importDefault(require("express"));
 var morgan_1 = __importDefault(require("morgan"));
 require("./routes/statistics");
+require("./routes/auth");
 var cors_1 = __importDefault(require("cors"));
 var bodyparser = __importStar(require("body-parser"));
 var routes_1 = require("./routes/routes");
@@ -45,7 +46,7 @@ catch (err) {
 }
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    res.json({
+    res.status(404).json({
         statusCode: 404,
     });
 });

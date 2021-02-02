@@ -1,6 +1,7 @@
 import express from 'express';
 import logger from 'morgan';
 import './routes/statistics';
+import './routes/auth';
 import cors from 'cors';
 import * as bodyparser from 'body-parser';
 import { RegisterRoutes } from './routes/routes';
@@ -25,7 +26,7 @@ try {
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  res.json({
+  res.status(404).json({
     statusCode: 404,
   });
 });

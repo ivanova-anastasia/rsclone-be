@@ -131,6 +131,138 @@
 					}
 				]
 			}
+		},
+		"/auth/login": {
+			"post": {
+				"operationId": "Create",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"additionalProperties": true
+						}
+					}
+				},
+				"tags": [
+					"AuthController"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "body",
+						"schema": {
+							"properties": {
+								"userName": {
+									"type": "string"
+								},
+								"password": {
+									"type": "string"
+								}
+							},
+							"title": "CreateBody",
+							"type": "object",
+							"required": [
+								"userName",
+								"password"
+							]
+						}
+					}
+				]
+			}
+		},
+		"/auth/test": {
+			"post": {
+				"operationId": "Test",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"additionalProperties": true
+						}
+					}
+				},
+				"tags": [
+					"AuthController"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "header",
+						"name": "Authorization",
+						"required": true,
+						"type": "string"
+					},
+					{
+						"in": "body",
+						"name": "body",
+						"schema": {
+							"properties": {
+								"userName": {
+									"type": "string"
+								},
+								"password": {
+									"type": "string"
+								}
+							},
+							"title": "TestBody",
+							"type": "object",
+							"required": [
+								"userName",
+								"password"
+							]
+						}
+					}
+				]
+			}
+		},
+		"/auth/register": {
+			"post": {
+				"operationId": "Register",
+				"produces": [
+					"application/json"
+				],
+				"responses": {
+					"200": {
+						"description": "Ok",
+						"schema": {
+							"additionalProperties": true
+						}
+					}
+				},
+				"tags": [
+					"AuthController"
+				],
+				"security": [],
+				"parameters": [
+					{
+						"in": "body",
+						"name": "body",
+						"schema": {
+							"properties": {
+								"userName": {
+									"type": "string"
+								},
+								"password": {
+									"type": "string"
+								}
+							},
+							"title": "RegisterBody",
+							"type": "object",
+							"required": [
+								"userName",
+								"password"
+							]
+						}
+					}
+				]
+			}
 		}
 	},
 	"produces": [
