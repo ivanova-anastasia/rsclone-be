@@ -15,11 +15,9 @@ import { UsersModel } from '../types/user';
 import { SessionsModel } from '../types/sessions';
 import { ServerError } from './../types/errors/serverErrors';
 
-//const { PG_SALT } = process.env;
+const { PG_SALT } = process.env;
 
 const getPasswordHash = (password) => {
-  const PG_SALT = 'qwe123';
-  console.log('PG_SALT: ' + PG_SALT);
   return md5(password + PG_SALT);
 };
 

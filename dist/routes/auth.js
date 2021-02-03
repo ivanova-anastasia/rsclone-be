@@ -68,10 +68,8 @@ var uuid_1 = require("uuid");
 var user_1 = require("../types/user");
 var sessions_1 = require("../types/sessions");
 var serverErrors_1 = require("./../types/errors/serverErrors");
-//const { PG_SALT } = process.env;
+var PG_SALT = process.env.PG_SALT;
 var getPasswordHash = function (password) {
-    var PG_SALT = 'qwe123';
-    console.log('PG_SALT: ' + PG_SALT);
     return md5_1.default(password + PG_SALT);
 };
 var generateToken = function (userId) {

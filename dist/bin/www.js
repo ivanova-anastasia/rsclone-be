@@ -78,7 +78,7 @@ var server = http.createServer(app_1.default);
 /**
  * Listen on provided port, on all network interfaces.
  */
-var MONGO_URI = 'mongodb+srv://flappy-bird:0XefcRAh1O8ZWJYU@cluster0.jby6t.mongodb.net/bird?retryWrites=true&w=majority';
+var MONGO_URI = "mongodb+srv://flappy-bird:" + process.env.MONGO_PASSWORD + "@cluster0.jby6t.mongodb.net/bird?retryWrites=true&w=majority";
 server.listen(port);
 server.on('error', onError);
 server.on('listening', function () { return __awaiter(void 0, void 0, void 0, function () {

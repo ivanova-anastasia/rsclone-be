@@ -25,8 +25,7 @@ const server = http.createServer(app);
 /**
  * Listen on provided port, on all network interfaces.
  */
-const MONGO_URI =
-  'mongodb+srv://flappy-bird:0XefcRAh1O8ZWJYU@cluster0.jby6t.mongodb.net/bird?retryWrites=true&w=majority';
+const MONGO_URI = `mongodb+srv://flappy-bird:${process.env.MONGO_PASSWORD}@cluster0.jby6t.mongodb.net/bird?retryWrites=true&w=majority`;
 
 server.listen(port);
 server.on('error', onError);
