@@ -27,14 +27,17 @@ var morgan_1 = __importDefault(require("morgan"));
 require("./routes/statistics");
 require("./routes/auth");
 var cors_1 = __importDefault(require("cors"));
-var bodyparser = __importStar(require("body-parser"));
+var bodyParser = __importStar(require("body-parser"));
 var routes_1 = require("./routes/routes");
 var swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
 var app = express_1.default();
 app.use(morgan_1.default('dev'));
 app.use(express_1.default.json());
 app.use(cors_1.default());
-app.use(bodyparser.json());
+app.use(bodyParser.urlencoded({
+    extended: true,
+}));
+app.use(bodyParser.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 routes_1.RegisterRoutes(app);
 try {
@@ -45,21 +48,22 @@ catch (err) {
     console.error('Unable to read swagger.json', err);
 }
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
-    res.status(404).json({
-        statusCode: 404,
+app.use(function notFoundHandler(_req, res) {
+    res.status(404).send({
+        message: 'Not Found',
     });
 });
-// error handler
-app.use(function (err, req, res, next) {
-    // set locals, only providing error in development
-    res.json(function (err, req, res, next) {
-        res.json({
-            statusCode: 500,
-            message: err.message,
-            stack: err.stack,
-        });
-    });
+app.use(function (err, _req, res, next) {
+    var status = err.status || 500;
+    console.log('err: ' + JSON.stringify(err));
+    var body = {
+        fields: err.fields || undefined,
+        message: err.message || 'An error occurred during the request.',
+        name: err.name,
+        status: status,
+    };
+    res.status(status).json(body);
+    next();
 });
 exports.default = app;
 //# sourceMappingURL=app.js.map

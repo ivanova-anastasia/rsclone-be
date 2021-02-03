@@ -67,10 +67,11 @@ var md5_1 = __importDefault(require("md5"));
 var uuid_1 = require("uuid");
 var user_1 = require("../types/user");
 var sessions_1 = require("../types/sessions");
-var PG_SALT = process.env.PG_SALT;
+var serverErrors_1 = require("./../types/errors/serverErrors");
+//const { PG_SALT } = process.env;
 var getPasswordHash = function (password) {
-    console.log("PG_SALT: " + PG_SALT);
-    var pgSalt = "";
+    var PG_SALT = 'qwe123';
+    console.log('PG_SALT: ' + PG_SALT);
     return md5_1.default(password + PG_SALT);
 };
 var generateToken = function (userId) {
@@ -80,13 +81,19 @@ var generateToken = function (userId) {
         userId: userId,
         expiresAt: new Date(Date.now() + 3600 * 1000).toISOString(),
     });
-    newSession
+    return newSession
         .save()
         .then(function (item) {
-        console.log('Session is saved ' + item);
+        return item.token;
     })
-        .catch(function (err) { return console.log('Session isnt saved ' + err); });
-    return token;
+        .catch(function (err) { return console.log('Session is not saved ' + err); });
+};
+var removeOldSessions = function (userId) {
+    return sessions_1.SessionsModel.deleteMany({ userId: userId })
+        .then(function () {
+        return userId;
+    })
+        .catch(function (err) { return console.log('old sessions not found'); });
 };
 var AuthController = /** @class */ (function (_super) {
     __extends(AuthController, _super);
@@ -95,21 +102,22 @@ var AuthController = /** @class */ (function (_super) {
     }
     AuthController.prototype.create = function (userName, password) {
         return __awaiter(this, void 0, void 0, function () {
-            var passwordHash, newUser;
+            var passwordHash;
             var _this = this;
             return __generator(this, function (_a) {
-                console.log("login request: username - " + userName + " password - " + password);
                 passwordHash = getPasswordHash(password);
-                newUser = new user_1.UsersModel({
-                    userName: userName,
-                    passwordHash: passwordHash,
-                });
-                console.log("log: ");
-                return [2 /*return*/, user_1.UsersModel.findOne({ userName: userName, passwordHash: passwordHash })
+                return [2 /*return*/, user_1.UsersModel.findOne({
+                        userName: userName,
+                        passwordHash: passwordHash,
+                    })
                         .then(function (user) {
-                        console.log("log: " + user);
+                        return removeOldSessions(user._id);
+                    })
+                        .then(function (user) {
+                        return generateToken(user._id);
+                    })
+                        .then(function (token) {
                         _this.setStatus(200);
-                        var token = generateToken(user._id);
                         return { token: token };
                     })
                         .catch(function (err) {
@@ -119,23 +127,9 @@ var AuthController = /** @class */ (function (_super) {
             });
         });
     };
-    AuthController.prototype.test = function (userName, password, authorization) {
-        return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
-            return __generator(this, function (_a) {
-                console.log("authorization: " + authorization);
-                return [2 /*return*/, sessions_1.SessionsModel.find({ token: authorization })
-                        .then(function (item) {
-                        console.log("session: " + item);
-                        return item;
-                    })
-                        .catch(function (err) { return _this.setStatus(403); })];
-            });
-        });
-    };
     AuthController.prototype.register = function (userName, password) {
         return __awaiter(this, void 0, void 0, function () {
-            var passwordHash, newUser, existingUserCheck;
+            var passwordHash, newUser;
             var _this = this;
             return __generator(this, function (_a) {
                 passwordHash = getPasswordHash(password);
@@ -143,32 +137,28 @@ var AuthController = /** @class */ (function (_super) {
                     userName: userName,
                     passwordHash: passwordHash,
                 });
-                existingUserCheck = user_1.UsersModel.findOne({ userName: userName })
-                    .then(function (user) {
-                    if (user) {
-                        _this.setStatus(409);
-                        console.log("user exist: " + user);
-                    }
-                    else {
-                        //return { reason: 'This username already exists'}
-                        return user;
-                    }
-                })
-                    .catch(function (err) {
-                    console.log("err: " + err);
-                });
-                console.log("existingUserCheck: " + existingUserCheck.userName);
-                if (existingUserCheck)
-                    return [2 /*return*/, { reason: 'This username already exists' }];
-                return [2 /*return*/, newUser
-                        .save()
+                return [2 /*return*/, user_1.UsersModel.findOne({ userName: userName })
                         .then(function (user) {
-                        var token = generateToken(user._id);
-                        console.log("token: " + token);
+                        console.log('user: ' + JSON.stringify(user));
+                        if (user) {
+                            return Promise.reject(new serverErrors_1.ServerError('This username already exists', 409));
+                        }
+                        else
+                            return null;
+                    })
+                        .then(function () {
+                        return newUser.save();
+                    })
+                        .then(function (user) {
+                        return generateToken(user._id);
+                    })
+                        .then(function (token) {
                         _this.setStatus(201);
                         return { token: token };
                     })
-                        .catch(function (err) { return _this.setStatus(500); })];
+                        .catch(function (err) {
+                        return Promise.reject(new serverErrors_1.ServerError(err, 409));
+                    })];
             });
         });
     };
@@ -177,12 +167,6 @@ var AuthController = /** @class */ (function (_super) {
         __param(0, tsoa_1.BodyProp()),
         __param(1, tsoa_1.BodyProp())
     ], AuthController.prototype, "create", null);
-    __decorate([
-        tsoa_1.Post('/test'),
-        __param(0, tsoa_1.BodyProp()),
-        __param(1, tsoa_1.BodyProp()),
-        __param(2, tsoa_1.Header('Authorization'))
-    ], AuthController.prototype, "test", null);
     __decorate([
         tsoa_1.Post('/register'),
         __param(0, tsoa_1.BodyProp()),

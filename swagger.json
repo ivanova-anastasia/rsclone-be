@@ -10,7 +10,7 @@
 		"contact": {}
 	},
 	"paths": {
-		"/statistics": {
+		"/statistics/all": {
 			"get": {
 				"operationId": "GetAll",
 				"produces": [
@@ -32,7 +32,9 @@
 				],
 				"security": [],
 				"parameters": []
-			},
+			}
+		},
+		"/statistics": {
 			"post": {
 				"operationId": "Create",
 				"produces": [
@@ -49,16 +51,17 @@
 				"tags": [
 					"StatisticsController"
 				],
-				"security": [],
+				"security": [
+					{
+						"api_token": []
+					}
+				],
 				"parameters": [
 					{
 						"in": "body",
 						"name": "body",
 						"schema": {
 							"properties": {
-								"userId": {
-									"type": "string"
-								},
 								"score": {
 									"type": "string"
 								},
@@ -69,16 +72,13 @@
 							"title": "CreateBody",
 							"type": "object",
 							"required": [
-								"userId",
 								"score",
 								"totalTime"
 							]
 						}
 					}
 				]
-			}
-		},
-		"/statistics/{userId}": {
+			},
 			"get": {
 				"operationId": "GetByUserId",
 				"produces": [
@@ -98,15 +98,12 @@
 				"tags": [
 					"StatisticsController"
 				],
-				"security": [],
-				"parameters": [
+				"security": [
 					{
-						"in": "path",
-						"name": "userId",
-						"required": true,
-						"type": "string"
+						"api_token": []
 					}
-				]
+				],
+				"parameters": []
 			},
 			"delete": {
 				"operationId": "DeleteByUserId",
@@ -121,15 +118,12 @@
 				"tags": [
 					"StatisticsController"
 				],
-				"security": [],
-				"parameters": [
+				"security": [
 					{
-						"in": "path",
-						"name": "userId",
-						"required": true,
-						"type": "string"
+						"api_token": []
 					}
-				]
+				],
+				"parameters": []
 			}
 		},
 		"/auth/login": {
@@ -164,54 +158,6 @@
 								}
 							},
 							"title": "CreateBody",
-							"type": "object",
-							"required": [
-								"userName",
-								"password"
-							]
-						}
-					}
-				]
-			}
-		},
-		"/auth/test": {
-			"post": {
-				"operationId": "Test",
-				"produces": [
-					"application/json"
-				],
-				"responses": {
-					"200": {
-						"description": "Ok",
-						"schema": {
-							"additionalProperties": true
-						}
-					}
-				},
-				"tags": [
-					"AuthController"
-				],
-				"security": [],
-				"parameters": [
-					{
-						"in": "header",
-						"name": "Authorization",
-						"required": true,
-						"type": "string"
-					},
-					{
-						"in": "body",
-						"name": "body",
-						"schema": {
-							"properties": {
-								"userName": {
-									"type": "string"
-								},
-								"password": {
-									"type": "string"
-								}
-							},
-							"title": "TestBody",
 							"type": "object",
 							"required": [
 								"userName",
@@ -269,5 +215,11 @@
 		"application/json"
 	],
 	"swagger": "2.0",
-	"securityDefinitions": {}
+	"securityDefinitions": {
+		"api_key": {
+			"type": "apiKey",
+			"name": "access_token",
+			"in": "header"
+		}
+	}
 }

@@ -71,16 +71,19 @@ var StatisticsController = /** @class */ (function (_super) {
             var _this = this;
             return __generator(this, function (_a) {
                 return [2 /*return*/, game_1.GameModel.find({})
-                        .then(function (items) { return items; })
+                        .then(function (items) {
+                        return items;
+                    })
                         .catch(function (err) { return _this.setStatus(500); })];
             });
         });
     };
-    StatisticsController.prototype.create = function (userId, score, totalTime) {
+    StatisticsController.prototype.create = function (score, totalTime, req) {
         return __awaiter(this, void 0, void 0, function () {
-            var newGame;
+            var userId, newGame;
             var _this = this;
             return __generator(this, function (_a) {
+                userId = req.app.get('session');
                 newGame = new game_1.GameModel({
                     userId: userId,
                     score: score,
@@ -97,23 +100,26 @@ var StatisticsController = /** @class */ (function (_super) {
             });
         });
     };
-    StatisticsController.prototype.getByUserId = function (userId) {
+    StatisticsController.prototype.getByUserId = function (req) {
         return __awaiter(this, void 0, void 0, function () {
+            var userId;
             var _this = this;
             return __generator(this, function (_a) {
+                userId = req.app.get('session');
                 return [2 /*return*/, game_1.GameModel.find({ userId: userId })
                         .then(function (items) {
-                        console.log(items);
                         return items;
                     })
                         .catch(function (err) { return _this.setStatus(500); })];
             });
         });
     };
-    StatisticsController.prototype.deleteByUserId = function (userId) {
+    StatisticsController.prototype.deleteByUserId = function (req) {
         return __awaiter(this, void 0, void 0, function () {
+            var userId;
             var _this = this;
             return __generator(this, function (_a) {
+                userId = req.app.get('session');
                 game_1.GameModel.deleteMany({ userId: userId })
                     .then(function () { return _this.setStatus(204); })
                     .catch(function (err) { return _this.setStatus(500); });
@@ -122,19 +128,24 @@ var StatisticsController = /** @class */ (function (_super) {
         });
     };
     __decorate([
-        tsoa_1.Get()
+        tsoa_1.Get('/all')
     ], StatisticsController.prototype, "getAll", null);
     __decorate([
+        tsoa_1.Security('api_token'),
         tsoa_1.Post(),
         __param(0, tsoa_1.BodyProp()),
         __param(1, tsoa_1.BodyProp()),
-        __param(2, tsoa_1.BodyProp())
+        __param(2, tsoa_1.Request())
     ], StatisticsController.prototype, "create", null);
     __decorate([
-        tsoa_1.Get('/{userId}')
+        tsoa_1.Security('api_token'),
+        tsoa_1.Get(),
+        __param(0, tsoa_1.Request())
     ], StatisticsController.prototype, "getByUserId", null);
     __decorate([
-        tsoa_1.Delete('/{userId}')
+        tsoa_1.Security('api_token'),
+        tsoa_1.Delete(),
+        __param(0, tsoa_1.Request())
     ], StatisticsController.prototype, "deleteByUserId", null);
     StatisticsController = __decorate([
         tsoa_1.Route('/statistics'),
