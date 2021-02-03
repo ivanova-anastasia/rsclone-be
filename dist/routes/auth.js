@@ -70,7 +70,6 @@ var sessions_1 = require("../types/sessions");
 var serverErrors_1 = require("./../types/errors/serverErrors");
 var PG_SALT = process.env.PG_SALT;
 var getPasswordHash = function (password) {
-    console.log('PG_SALT: ' + PG_SALT);
     return md5_1.default(password + PG_SALT);
 };
 var generateToken = function (userId) {
