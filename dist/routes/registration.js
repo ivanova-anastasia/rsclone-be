@@ -58,100 +58,30 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.StatisticsController = void 0;
-var game_1 = require("../types/game");
+exports.RegistrationController = void 0;
 var tsoa_1 = require("tsoa");
-var StatisticsController = /** @class */ (function (_super) {
-    __extends(StatisticsController, _super);
-    function StatisticsController() {
+var RegistrationController = /** @class */ (function (_super) {
+    __extends(RegistrationController, _super);
+    function RegistrationController() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
-    StatisticsController.prototype.getAll = function () {
+    RegistrationController.prototype.test = function (userName, password) {
         return __awaiter(this, void 0, void 0, function () {
-            var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, game_1.GameModel.find({})
-                        .then(function (items) {
-                        return items;
-                    })
-                        .catch(function (err) { return _this.setStatus(500); })];
-            });
-        });
-    };
-    StatisticsController.prototype.create = function (score, totalTime, req) {
-        return __awaiter(this, void 0, void 0, function () {
-            var userId, newGame;
-            var _this = this;
-            return __generator(this, function (_a) {
-                userId = req.app.get('session');
-                newGame = new game_1.GameModel({
-                    userId: userId,
-                    score: score,
-                    totalTime: totalTime,
-                });
-                this.setStatus(201);
-                return [2 /*return*/, newGame
-                        .save()
-                        .then(function (item) {
-                        _this.setStatus(201);
-                        return item;
-                    })
-                        .catch(function (err) { return _this.setStatus(500); })];
-            });
-        });
-    };
-    StatisticsController.prototype.getByUserId = function (req) {
-        return __awaiter(this, void 0, void 0, function () {
-            var userId;
-            var _this = this;
-            return __generator(this, function (_a) {
-                userId = req.app.get('session');
-                return [2 /*return*/, game_1.GameModel.find({ userId: userId })
-                        .then(function (items) {
-                        return items;
-                    })
-                        .catch(function (err) { return _this.setStatus(500); })];
-            });
-        });
-    };
-    StatisticsController.prototype.deleteByUserId = function (req) {
-        return __awaiter(this, void 0, void 0, function () {
-            var userId;
-            var _this = this;
-            return __generator(this, function (_a) {
-                userId = req.app.get('session');
-                game_1.GameModel.deleteMany({ userId: userId })
-                    .then(function () { return _this.setStatus(204); })
-                    .catch(function (err) { return _this.setStatus(500); });
                 return [2 /*return*/];
             });
         });
     };
     __decorate([
-        tsoa_1.Get('/all')
-    ], StatisticsController.prototype, "getAll", null);
-    __decorate([
-        tsoa_1.Security('api_token'),
-        tsoa_1.Post(),
+        tsoa_1.Post('/test'),
         __param(0, tsoa_1.BodyProp()),
-        __param(1, tsoa_1.BodyProp()),
-        __param(2, tsoa_1.Request())
-    ], StatisticsController.prototype, "create", null);
-    __decorate([
-        tsoa_1.Security('api_token'),
-        tsoa_1.Get(),
-        __param(0, tsoa_1.Request())
-    ], StatisticsController.prototype, "getByUserId", null);
-    __decorate([
-        tsoa_1.Security('api_token'),
-        tsoa_1.Delete(),
-        __param(0, tsoa_1.Request())
-    ], StatisticsController.prototype, "deleteByUserId", null);
-    StatisticsController = __decorate([
-        tsoa_1.Route('/statistics'),
-        tsoa_1.Tags('StatisticsController')
-    ], StatisticsController);
-    return StatisticsController;
+        __param(1, tsoa_1.BodyProp())
+    ], RegistrationController.prototype, "test", null);
+    RegistrationController = __decorate([
+        tsoa_1.Route('/registration'),
+        tsoa_1.Tags('RegistrationController')
+    ], RegistrationController);
+    return RegistrationController;
 }(tsoa_1.Controller));
-exports.StatisticsController = StatisticsController;
-//# sourceMappingURL=statistics.js.map
+exports.RegistrationController = RegistrationController;
+//# sourceMappingURL=registration.js.map

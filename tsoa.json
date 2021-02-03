@@ -1,11 +1,24 @@
 {
   "entryFile": "./app.ts",
   "spec": {
-    "outputDirectory": "./"
+    "outputDirectory": "./",
+    "securityDefinitions": {
+      "api_key": {
+        "type": "apiKey",
+        "name": "access_token",
+        "in": "header"
+      }
+    }
   },
   "routes": {
     "basePath": "/",
     "entryFile": "./app.ts",
-    "routesDir": "./routes"
+    "routesDir": "./routes",
+    "authenticationModule": "./service/authentication.ts"
+  },
+  "compilerOptions": {
+    "target": "es6",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   }
 }
