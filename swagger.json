@@ -63,7 +63,8 @@
 						"schema": {
 							"properties": {
 								"score": {
-									"type": "string"
+									"type": "number",
+									"format": "double"
 								},
 								"totalTime": {
 									"type": "string"
@@ -72,8 +73,7 @@
 							"title": "CreateBody",
 							"type": "object",
 							"required": [
-								"score",
-								"totalTime"
+								"score"
 							]
 						}
 					}

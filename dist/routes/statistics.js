@@ -78,7 +78,7 @@ var StatisticsController = /** @class */ (function (_super) {
             });
         });
     };
-    StatisticsController.prototype.create = function (score, totalTime, req) {
+    StatisticsController.prototype.create = function (score, req, totalTime) {
         return __awaiter(this, void 0, void 0, function () {
             var userId, newGame;
             var _this = this;
@@ -134,8 +134,8 @@ var StatisticsController = /** @class */ (function (_super) {
         tsoa_1.Security('api_token'),
         tsoa_1.Post(),
         __param(0, tsoa_1.BodyProp()),
-        __param(1, tsoa_1.BodyProp()),
-        __param(2, tsoa_1.Request())
+        __param(1, tsoa_1.Request()),
+        __param(2, tsoa_1.BodyProp())
     ], StatisticsController.prototype, "create", null);
     __decorate([
         tsoa_1.Security('api_token'),

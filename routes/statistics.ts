@@ -26,9 +26,9 @@ export class StatisticsController extends Controller {
   @Security('api_token')
   @Post()
   public async create(
-    @BodyProp() score: string,
-    @BodyProp() totalTime: string,
-    @Request() req: any
+    @BodyProp() score: number,
+    @Request() req: any,
+    @BodyProp() totalTime?: string
   ): Promise<any> {
     const userId = req.app.get('session');
 
