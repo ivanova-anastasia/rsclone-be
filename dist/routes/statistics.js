@@ -57,6 +57,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.StatisticsController = void 0;
 var game_1 = require("../types/game");
@@ -70,15 +77,20 @@ var StatisticsController = /** @class */ (function (_super) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, game_1.GameModel.find({})
-                        .then(function (items) {
-                        return items;
+                return [2 /*return*/, game_1.GameModel.find({}).populate({ path: 'userId', select: 'userName' }).then(function (games) {
+                        var users = __spreadArrays(Array.from(new Set(games.map(function (game) { var _a; return (_a = game.userId) === null || _a === void 0 ? void 0 : _a.userName; }))));
+                        return users.map(function (user) {
+                            var maxScore = games.filter(function (game) { var _a; return ((_a = game.userId) === null || _a === void 0 ? void 0 : _a.userName) === user; }).sort(function (a, b) { return b.score - a.score; })[0].score;
+                            return { user: user, score: maxScore };
+                        }).sort(function (a, b) { return b.score - a.score; });
                     })
-                        .catch(function (err) { return _this.setStatus(500); })];
+                        .catch(function (err) {
+                        _this.setStatus(500);
+                    })];
             });
         });
     };
-    StatisticsController.prototype.create = function (score, totalTime, req) {
+    StatisticsController.prototype.create = function (score, req, totalTime) {
         return __awaiter(this, void 0, void 0, function () {
             var userId, newGame;
             var _this = this;
@@ -134,8 +146,8 @@ var StatisticsController = /** @class */ (function (_super) {
         tsoa_1.Security('api_token'),
         tsoa_1.Post(),
         __param(0, tsoa_1.BodyProp()),
-        __param(1, tsoa_1.BodyProp()),
-        __param(2, tsoa_1.Request())
+        __param(1, tsoa_1.Request()),
+        __param(2, tsoa_1.BodyProp())
     ], StatisticsController.prototype, "create", null);
     __decorate([
         tsoa_1.Security('api_token'),

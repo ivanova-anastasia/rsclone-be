@@ -47,9 +47,9 @@ export function RegisterRoutes(app: express.Router) {
             authenticateMiddleware([{"api_token":[]}]),
             function (request: any, response: any, next: any) {
             const args = {
-                    score: {"in":"body-prop","name":"score","required":true,"dataType":"string"},
-                    totalTime: {"in":"body-prop","name":"totalTime","required":true,"dataType":"string"},
+                    score: {"in":"body-prop","name":"score","required":true,"dataType":"double"},
                     req: {"in":"request","name":"req","required":true,"dataType":"object"},
+                    totalTime: {"in":"body-prop","name":"totalTime","dataType":"string"},
             };
 
             // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
